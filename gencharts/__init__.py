@@ -3,7 +3,7 @@
 import os
 import json
 import pandas as pd
-from altair import Chart, X, Y, Axis, Scale
+from altair import Chart, X, Y, Axis, Scale, Size
 from goerr import err
 
 
@@ -31,9 +31,9 @@ class ChartsGenerator():
         else:
             return html
 
-    def serialize(self, dataobj, xfield, yfield, time_unit,
+    def serialize(self, dataobj, xfield, yfield, time_unit=None,
                   chart_type="line", width=800,
-                  height=300, color=None, size=None,
+                  height=300, color=None, size=Size(),
                   scale=Scale(zero=False)):
         """
         Serialize to an Altair chart object from either a pandas dataframe, a dictionnary
