@@ -3,7 +3,7 @@
 import os
 import json
 import pandas as pd
-from altair import Chart, X, Y, Axis, Scale, Size, Data, Color
+from altair import Chart, X, Y, Axis, Scale, Size, Data, Color, Shape
 from goerr import err
 
 
@@ -34,7 +34,7 @@ class ChartsGenerator():
     def serialize(self, dataobj, xfield, yfield, time_unit=None,
                   chart_type="line", width=800,
                   height=300, color=Color(), size=Size(),
-                  scale=Scale(zero=False)):
+                  scale=Scale(zero=False), shape=Shape()):
         """
         Serialize to an Altair chart object from either a pandas dataframe, a dictionnary,
         a list or an Altair Data object
@@ -51,6 +51,7 @@ class ChartsGenerator():
             y=yencode,
             color=color,
             size=size,
+            shape=shape
         ).configure_cell(
             width=width,
             height=height
