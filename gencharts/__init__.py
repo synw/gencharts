@@ -3,7 +3,7 @@
 import os
 import json
 import pandas as pd
-from altair import Chart, X, Y, Axis, Scale, Size
+from altair import Chart, X, Y, Axis, Scale, Size, Data, Color
 from goerr import err
 
 
@@ -33,15 +33,17 @@ class ChartsGenerator():
 
     def serialize(self, dataobj, xfield, yfield, time_unit=None,
                   chart_type="line", width=800,
-                  height=300, color=None, size=Size(),
+                  height=300, color=Color(), size=Size(),
                   scale=Scale(zero=False)):
         """
-        Serialize to an Altair chart object from either a pandas dataframe, a dictionnary
-        or an Altair Data object
+        Serialize to an Altair chart object from either a pandas dataframe, a dictionnary,
+        a list or an Altair Data object
         """
         dataset = dataobj
         if self._is_dict(dataobj) is True:
             dataset = self._dict_to_df(dataobj, xfield, yfield)
+        elif isinstance(dataobj, list):
+            dataset = Data(values=dataobj)
         xencode, yencode = self._encode_fields(
             xfield, yfield, time_unit, scale=scale)
         chart = self._chart_class(dataset, chart_type).encode(
@@ -111,6 +113,7 @@ class ChartsGenerator():
         Writes a chart's html to a file
         """
         # check directories
+
         if not os.path.isdir(folderpath):
             try:
                 os.makedirs(folderpath)
