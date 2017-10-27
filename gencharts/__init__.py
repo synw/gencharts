@@ -9,10 +9,25 @@ from goerr import err
 
 class ChartsGenerator():
 
+    def gen(self, slug, name, dataobj, xfield, yfield, time_unit=None,
+            chart_type="line", width=800,
+            height=300, color=Color(), size=Size(),
+            scale=Scale(zero=False), shape=Shape(), filepath=None,
+            html_before="", html_after=""):
+        """
+        Generates an html chart from either a pandas dataframe, a dictionnary,
+        a list or an Altair Data object and optionally write it to a file
+        """
+        chart_obj = self.serialize(dataobj, xfield, yfield, time_unit,
+                                   chart_type, width, height, color, size, scale, shape)
+        html = self.html(slug, name, chart_obj, filepath,
+                         html_before, html_after)
+        return html
+
     def html(self, slug, name, chart_obj, filepath=None,
              html_before="", html_after=""):
         """
-        Generate html and optionally write it to a file
+        Generate html from an Altair chart object and optionally write it to a file
         """
         try:
             html = ""
