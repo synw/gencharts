@@ -22,7 +22,7 @@ class ChartsGenerator():
                                    chart_type, width, height, color, size, scale, shape)
         html = self.html(slug, name, chart_obj, filepath,
                          html_before, html_after)
-        return html
+        return chart_obj
 
     def html(self, slug, name, chart_obj, filepath=None,
              html_before="", html_after=""):
@@ -78,6 +78,23 @@ class ChartsGenerator():
         Serializes a datetime object to Vega Lite format
         """
         return date.strftime("%Y-%m-%d %H:%M:%S")
+    
+    def resample(df, index, time_unit="1Min"):
+        """
+        Aggregate a dataframe by time with a maximum of 5000 records
+        """
+        df.set_index(index)
+        df.index = pd.to_datetime(df.index)
+        df2 = df.resample(time_unit).mean()
+        if len(df2.index) > 4999:
+            df2 = df.resample("1Min").mean()
+        if len(df2.index) > 4999:
+            df2 = df.resample("10Min").mean()
+        if len(df2.index) > 4999:
+            df2 = df.resample("1H").mean()
+        if len(df2.index) > 4999:
+            df2 = df.resample("1D").mean()
+        return df2
 
     def _patch_json(self, json_data):
         """
