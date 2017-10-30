@@ -11,8 +11,8 @@ class ChartsGenerator():
 
     def gen(self, slug, name, dataobj, xfield, yfield, time_unit=None,
             chart_type="line", width=800,
-            height=300, color=Color(), size=Size(),
-            scale=Scale(zero=False), shape=Shape(), filepath=None,
+            height=300, color=None, size=None,
+            scale=Scale(zero=False), shape=None, filepath=None,
             html_before="", html_after=""):
         """
         Generates an html chart from either a pandas dataframe, a dictionnary,
@@ -47,8 +47,8 @@ class ChartsGenerator():
 
     def serialize(self, dataobj, xfield, yfield, time_unit=None,
                   chart_type="line", width=800,
-                  height=300, color=Color(), size=Size(),
-                  scale=Scale(zero=False), shape=Shape()):
+                  height=300, color=None, size=None,
+                  scale=Scale(zero=False), shape=None):
         """
         Serialize to an Altair chart object from either a pandas dataframe, a dictionnary,
         a list or an Altair Data object
@@ -60,17 +60,27 @@ class ChartsGenerator():
             dataset = Data(values=dataobj)
         xencode, yencode = self._encode_fields(
             xfield, yfield, time_unit, scale=scale)
+        cargs = self.get_args(xencode, yencode, color, size, shape)
         chart = self._chart_class(dataset, chart_type).encode(
-            x=xencode,
-            y=yencode,
-            color=color,
-            size=size,
-            shape=shape
+            **cargs
         ).configure_cell(
             width=width,
             height=height
         )
         return chart
+
+    def get_args(self, xencode, yencode, color=None, size=None, shape=None):
+        """
+        Returns a dictionnary of arguments for encoding
+        """
+        cargs = {"x": xencode, "y": yencode}
+        if size is not None:
+            cargs["size"] = size
+        if shape is not None:
+            cargs["shape"] = shape
+        if color is not None:
+            cargs["color"] = color
+        return cargs
 
     def serialize_date(self, date):
         """
@@ -78,11 +88,12 @@ class ChartsGenerator():
         """
         return date.strftime("%Y-%m-%d %H:%M:%S")
 
-    def resample(self, df, index, time_unit="1Min"):
+    def resample(self, df, index=None, time_unit="1Min"):
         """
         Aggregate a dataframe by time with a maximum of 5000 records
         """
-        df.set_index(index)
+        if index is not None:
+            df.set_index(index)
         df.index = pd.to_datetime(df.index)
         df2 = df.resample(time_unit).mean()
         if len(df2.index) > 4999:
