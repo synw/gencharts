@@ -20,8 +20,8 @@ class ChartsGenerator():
         """
         chart_obj = self.serialize(dataobj, xfield, yfield, time_unit,
                                    chart_type, width, height, color, size, scale, shape)
-        html = self.html(slug, name, chart_obj, filepath,
-                         html_before, html_after)
+        self.html(slug, name, chart_obj, filepath,
+                  html_before, html_after)
         return chart_obj
 
     def html(self, slug, name, chart_obj, filepath=None,
@@ -78,7 +78,7 @@ class ChartsGenerator():
         Serializes a datetime object to Vega Lite format
         """
         return date.strftime("%Y-%m-%d %H:%M:%S")
-    
+
     def resample(df, index, time_unit="1Min"):
         """
         Aggregate a dataframe by time with a maximum of 5000 records
