@@ -11,8 +11,8 @@ class ChartsGenerator():
 
     def gen(self, slug, name, dataobj, xfield, yfield, time_unit=None,
             chart_type="line", width=800,
-            height=300, color=None, size=None,
-            scale=Scale(zero=False), shape=None, filepath=None,
+            height=300, color=Color(), size=Size(),
+            scale=Scale(zero=False), shape=Shape(), filepath=None,
             html_before="", html_after=""):
         """
         Generates an html chart from either a pandas dataframe, a dictionnary,
@@ -20,8 +20,9 @@ class ChartsGenerator():
         """
         chart_obj = self.serialize(dataobj, xfield, yfield, time_unit,
                                    chart_type, width, height, color, size, scale, shape)
-        self.html(slug, name, chart_obj, filepath, html_before, html_after)
-        return chart_obj
+        html = self.html(slug, name, chart_obj, filepath,
+                         html_before, html_after)
+        return html
 
     def html(self, slug, name, chart_obj, filepath=None,
              html_before="", html_after=""):
@@ -59,52 +60,27 @@ class ChartsGenerator():
         elif isinstance(dataobj, list):
             dataset = Data(values=dataobj)
         xencode, yencode = self._encode_fields(
-            xfield, yfield, time_unit, scale=scale)
-        cargs = self.get_args(xencode, yencode, color, size, shape)
+            xfield, yfield, time_unit)
+        opts = dict(x=xencode, y=yencode)
+        if color is not None:
+            opts["color"] = color
+        if size is not None:
+            opts["size"] = size
+        if shape is not None:
+            opts["shape"] = shape
         chart = self._chart_class(dataset, chart_type).encode(
-            **cargs
+            **opts
         ).configure_cell(
             width=width,
-            height=height
+            height=height,
         )
         return chart
-
-    def get_args(self, xencode, yencode, color=None, size=None, shape=None):
-        """
-        Returns a dictionnary of arguments for encoding
-        """
-        cargs = {"x": xencode, "y": yencode}
-        if size is not None:
-            cargs["size"] = size
-        if shape is not None:
-            cargs["shape"] = shape
-        if color is not None:
-            cargs["color"] = color
-        return cargs
 
     def serialize_date(self, date):
         """
         Serializes a datetime object to Vega Lite format
         """
         return date.strftime("%Y-%m-%d %H:%M:%S")
-
-    def resample(self, df, index=None, time_unit="1Min"):
-        """
-        Aggregate a dataframe by time with a maximum of 5000 records
-        """
-        if index is not None:
-            df.set_index(index)
-        df.index = pd.to_datetime(df.index)
-        df2 = df.resample(time_unit).mean()
-        if len(df2.index) > 4999:
-            df2 = df.resample("1Min").mean()
-        if len(df2.index) > 4999:
-            df2 = df.resample("10Min").mean()
-        if len(df2.index) > 4999:
-            df2 = df.resample("1H").mean()
-        if len(df2.index) > 4999:
-            df2 = df.resample("1D").mean()
-        return df2
 
     def _patch_json(self, json_data):
         """
