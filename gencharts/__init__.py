@@ -49,7 +49,7 @@ class ChartsGenerator():
     def serialize(self, dataobj, xfield, yfield, time_unit=None,
                   chart_type="line", width=800,
                   height=300, color=None, size=None,
-                  scale=Scale(zero=False), shape=None):
+                  scale=Scale(zero=False), shape=None, options={}):
         """
         Serialize to an Altair chart object from either a pandas dataframe, a dictionnary,
         a list or an Altair Data object
@@ -68,7 +68,7 @@ class ChartsGenerator():
             opts["size"] = size
         if shape is not None:
             opts["shape"] = shape
-        chart = self._chart_class(dataset, chart_type).encode(
+        chart = self._chart_class(dataset, chart_type, **options).encode(
             **opts
         ).configure_cell(
             width=width,
@@ -148,28 +148,28 @@ class ChartsGenerator():
         except Exception as e:
             err.new(e)
 
-    def _chart_class(self, df, chart_type):
+    def _chart_class(self, df, chart_type, **kwargs):
         """
         Get the right chart class from a string
         """
         if chart_type == "bar":
-            return Chart(df).mark_bar()
+            return Chart(df).mark_bar(**kwargs)
         elif chart_type == "circle":
-            return Chart(df).mark_circle()
+            return Chart(df).mark_circle(**kwargs)
         elif chart_type == "line":
-            return Chart(df).mark_line()
+            return Chart(df).mark_line(**kwargs)
         elif chart_type == "point":
-            return Chart(df).mark_point()
+            return Chart(df).mark_point(**kwargs)
         elif chart_type == "area":
-            return Chart(df).mark_area()
+            return Chart(df).mark_area(**kwargs)
         elif chart_type == "tick":
-            return Chart(df).mark_tick()
+            return Chart(df).mark_tick(**kwargs)
         elif chart_type == "text":
-            return Chart(df).mark_text()
+            return Chart(df).mark_text(**kwargs)
         elif chart_type == "square":
-            return Chart(df).mark_square()
+            return Chart(df).mark_square(**kwargs)
         elif chart_type == "rule":
-            return Chart(df).mark_rule()
+            return Chart(df).mark_rule(**kwargs)
         return None
 
     def _encode_fields(self, xfield, yfield, time_unit=None, scale=Scale(zero=False)):
