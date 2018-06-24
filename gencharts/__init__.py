@@ -138,7 +138,7 @@ class ChartsGenerator():
             try:
                 os.makedirs(folderpath)
             except Exception as e:
-                err.new(e)
+                tr.err(e)
         # construct file path
         filepath = folderpath + "/" + slug + ".html"
         #~ write the file
@@ -147,7 +147,7 @@ class ChartsGenerator():
             filex.write(html)
             filex.close()
         except Exception as e:
-            err.new(e)
+            tr.err(e)
 
     def _chart_class(self, df, chart_type, **kwargs):
         """
