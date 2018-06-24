@@ -4,7 +4,7 @@ import os
 import json
 import pandas as pd
 from altair import Chart, X, Y, Axis, Scale, Size, Data, Color, Shape
-from goerr import err
+from goerr import tr
 
 
 class ChartsGenerator():
@@ -38,7 +38,8 @@ class ChartsGenerator():
             html = html_before + html +\
                 self._json_to_html(slug, json_data) + html_after
         except Exception as e:
-            err.new(e)
+            tr.new(e)
+            tr.check()
         # generate file
         if filepath is not None:
             self._write_file(slug, filepath, html)
@@ -172,7 +173,8 @@ class ChartsGenerator():
             return Chart(df).mark_rule(**kwargs)
         return None
 
-    def _encode_fields(self, xfield, yfield, time_unit=None, scale=Scale(zero=False)):
+    def _encode_fields(self, xfield, yfield, time_unit=None,
+                       scale=Scale(zero=False)):
         """
         Encode the fields in Altair format
         """
