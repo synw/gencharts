@@ -1,1 +1,1 @@
-altair
+altair<2.0

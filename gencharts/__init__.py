@@ -4,7 +4,10 @@ import os
 import json
 import pandas as pd
 from altair import Chart, X, Y, Axis, Scale, Size, Data, Color, Shape
-from goerr import tr
+from goerr import Trace
+
+
+tr = Trace()
 
 
 class ChartsGenerator():
